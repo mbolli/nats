@@ -20,7 +20,7 @@ final class RuntimeGuard
             return;
         }
 
-        if (\OpenSwoole\Coroutine::getCid() > 0) {
+        if (\OpenSwoole\Coroutine::getCid() !== -1) {
             throw FeatureIsNotSupported::forOpenSwoole();
         }
     }

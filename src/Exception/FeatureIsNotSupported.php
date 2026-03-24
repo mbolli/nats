@@ -34,6 +34,6 @@ final class FeatureIsNotSupported extends NatsException
 
     public static function forOpenSwoole(): self
     {
-        return new self('OpenSwoole coroutines are not supported. This client requires the Amp/Revolt event loop runtime.');
+        return new self('OpenSwoole coroutines are not supported. Run this client outside OpenSwoole coroutine contexts with the Amp/Revolt event loop runtime.');
     }
 }

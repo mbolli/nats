@@ -15,13 +15,22 @@ final class ClientRuntimeTest extends TestCase
 {
     protected function setUp(): void
     {
-        self::defineOpenSwooleCoroutineStub();
-        OpenSwooleCoroutineStub::$cid = -1;
+        if (\class_exists(\OpenSwoole\Coroutine::class) && !\property_exists(\OpenSwoole\Coroutine::class, 'cid')) {
+            self::markTestSkipped('OpenSwoole extension is loaded; fixture-based coroutine stubbing is unavailable.');
+        }
+
+        if (!\class_exists(\OpenSwoole\Coroutine::class)) {
+            require_once __DIR__ . '/Fixture/OpenSwoole/Coroutine.php';
+        }
+
+        \OpenSwoole\Coroutine::$cid = -1;
     }
 
     protected function tearDown(): void
     {
-        OpenSwooleCoroutineStub::$cid = -1;
+        if (\class_exists(\OpenSwoole\Coroutine::class) && \property_exists(\OpenSwoole\Coroutine::class, 'cid')) {
+            \OpenSwoole\Coroutine::$cid = -1;
+        }
     }
 
     public function testClientCanBeCreatedOutsideOpenSwooleCoroutine(): void
@@ -33,35 +42,11 @@ final class ClientRuntimeTest extends TestCase
 
     public function testClientFailsInsideOpenSwooleCoroutine(): void
     {
-        OpenSwooleCoroutineStub::$cid = 1;
+        \OpenSwoole\Coroutine::$cid = 0;
 
         self::expectException(FeatureIsNotSupported::class);
         self::expectExceptionMessage('OpenSwoole coroutines are not supported.');
 
         new Client(Config::default());
     }
-
-    private static function defineOpenSwooleCoroutineStub(): void
-    {
-        if (\class_exists(\OpenSwoole\Coroutine::class)) {
-            return;
-        }
-
-        eval(<<<'PHP'
-namespace OpenSwoole;
-
-final class Coroutine
-{
-    public static function getCid(): int
-    {
-        return \Thesis\Nats\OpenSwooleCoroutineStub::$cid;
-    }
-}
-PHP);
-    }
-}
-
-final class OpenSwooleCoroutineStub
-{
-    public static int $cid = -1;
 }
