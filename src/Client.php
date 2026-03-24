@@ -11,6 +11,7 @@ use Thesis\Nats\Internal\Connection;
 use Thesis\Nats\Internal\Hooks;
 use Thesis\Nats\Internal\Id;
 use Thesis\Nats\Internal\Iter;
+use Thesis\Nats\Internal\RuntimeGuard;
 use Thesis\Nats\Internal\Rpc;
 use Thesis\Nats\Internal\Subscription\SubscriptionHandler;
 use Thesis\Nats\JetStream\Delivery as JetStreamDelivery;
@@ -51,6 +52,7 @@ final class Client
         private readonly Serializer $serializer = new ValinorSerializer(),
         private readonly Encoder $encoder = new NativeEncoder(),
     ) {
+        RuntimeGuard::assertSupported();
         $this->connectionFactory = Connection\SocketConnectionFactory::fromConfig($this->config);
         $this->subscriptionIdGenerator = new Id\SubscriptionIdGenerator();
         $this->acks = Acks::fromClient($this);

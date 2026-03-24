@@ -31,4 +31,9 @@ final class FeatureIsNotSupported extends NatsException
     {
         return new self('Limit marker ttl for KeyValue is not supported.');
     }
+
+    public static function forOpenSwoole(): self
+    {
+        return new self('OpenSwoole coroutines are not supported. This client requires the Amp/Revolt event loop runtime.');
+    }
 }

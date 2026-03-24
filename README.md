@@ -40,6 +40,19 @@ Pure non-blocking (fiber based) strictly typed full-featured PHP driver for NATS
 composer require thesis/nats
 ```
 
+## Runtime compatibility
+
+This client is built on top of [Amp](https://amphp.org/) and the
+[Revolt event loop](https://revolt.run/).
+
+- Supported: regular PHP processes using the Amp/Revolt runtime.
+- Not supported: running the client inside an `OpenSwoole\\Coroutine` context.
+
+OpenSwoole ships its own coroutine scheduler and event loop, while this client
+expects Amp/Revolt to own async scheduling and socket I/O. Because there is no
+Revolt/OpenSwoole bridge in this package, the client now fails fast with a
+clear exception instead of continuing in an unsupported runtime.
+
 ## Nats Core
 
 The library implements the full functionality of NATS Core, including pub-sub, queues and request–reply.
